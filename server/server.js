@@ -10,11 +10,29 @@ var io = socketIO(server);
 
 app.use(express.static(publicPath));
 
+//When a new connection is made from client
 io.on('connection', (socket) => {
+    //Prints this in server console
     console.log('New User Connected');
     
+    //Only to the user connected as a welcome message
+    socket.emit('newMessage', {
+        from: 'Admin',
+        text: 'Welcome to the chat room',
+        createdAt: new Date().getTime()
+    });
+    
+    //To everyone except the new user as a 'this user joined the chat room'
+    socket.broadcast.emit('newMessage', {
+        from: 'Admin',
+        text: 'New user joined',
+        createdAt: new Date().getTime()
+    });
+    
+    //Called when user sends a new message
     socket.on('createMessage', (message) => {
         console.log('createMessage', message);
+        //Sends the new message to every user
         io.emit('newMessage', {
             from: message.from,
             text: message.text,
@@ -22,13 +40,14 @@ io.on('connection', (socket) => {
         })
     });
     
+    //When the user disconnects from the server
     socket.on('disconnect', () => {
        console.log('User was Disconnected');       
     });
     
 });
 
-
+//The server listens on port 3000
 server.listen(3000, () => {
     console.log("Server started on port 3000");
 });
