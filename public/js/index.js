@@ -11,19 +11,20 @@ socket.on('disconnect', function() {
 });
 //Called when there is a new message from server
 socket.on('newMessage', function(message){
-    console.log('newMessage', message);
+    var formattedTime = moment(message.createdAt).format('h:mm a');
     var li = jQuery('<li></li>');
-    li.text(`${message.from}: ${message.text}`);
+    li.text(`${message.from} ${formattedTime}: ${message.text}`);
     
     jQuery('#messages').append(li);
 });
 
 //Gets location from server and prints out url to user
 socket.on('newLocationMessage', function(message){
+    var formattedTime = moment(message.createdAt).format('h:mm a');
     var li = jQuery('<li></li');
     var a = jQuery("<a target='_blank'>My Current Location</a>");
     
-    li.text(`${message.from}: `);
+    li.text(`${message.from} ${formattedTime}: `);
     a.attr('href', message.url);
     li.append(a);
     
