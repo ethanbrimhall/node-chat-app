@@ -28,7 +28,7 @@ io.on('connection', (socket) => {
         console.log('createMessage', message);
         //Sends the new message to every user
         io.emit('newMessage', generateMessage(message.from, message.text));
-        callback('This is from the server.');
+        callback();
     });
     
     //Called when the coords of user is recieved
