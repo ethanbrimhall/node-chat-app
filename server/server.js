@@ -3,6 +3,8 @@ const http = require('http');
 const express = require('express');
 const socketIO = require('socket.io');
 
+const {generateMessage} = require('./utils/message');
+
 const publicPath = path.join(__dirname, '../public');
 var app = express();
 var server = http.createServer(app);
@@ -16,28 +18,16 @@ io.on('connection', (socket) => {
     console.log('New User Connected');
     
     //Only to the user connected as a welcome message
-    socket.emit('newMessage', {
-        from: 'Admin',
-        text: 'Welcome to the chat room',
-        createdAt: new Date().getTime()
-    });
+    socket.emit('newMessage', generateMessage('Admin', 'Welcome to the chat room'));
     
     //To everyone except the new user as a 'this user joined the chat room'
-    socket.broadcast.emit('newMessage', {
-        from: 'Admin',
-        text: 'New user joined',
-        createdAt: new Date().getTime()
-    });
+    socket.broadcast.emit('newMessage', generateMessage('Admin', 'New user has joined the chat room'));
     
     //Called when user sends a new message
     socket.on('createMessage', (message) => {
         console.log('createMessage', message);
         //Sends the new message to every user
-        io.emit('newMessage', {
-            from: message.from,
-            text: message.text,
-            createdAt: new Date().getTime()
-        })
+        io.emit('newMessage', generateMessage(message.from, message.text));
     });
     
     //When the user disconnects from the server
