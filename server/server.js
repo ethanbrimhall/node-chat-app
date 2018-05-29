@@ -24,10 +24,11 @@ io.on('connection', (socket) => {
     socket.broadcast.emit('newMessage', generateMessage('Admin', 'New user has joined the chat room'));
     
     //Called when user sends a new message
-    socket.on('createMessage', (message) => {
+    socket.on('createMessage', (message, callback) => {
         console.log('createMessage', message);
         //Sends the new message to every user
         io.emit('newMessage', generateMessage(message.from, message.text));
+        callback('This is from the server.');
     });
     
     //When the user disconnects from the server
