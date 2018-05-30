@@ -42,18 +42,22 @@ io.on('connection', (socket) => {
     
     //Called when user sends a new message
     socket.on('createMessage', (message, callback) => {
-        console.log('createMessage', message);
         //Sends the new message to every user
         var user = users.getUser(socket.id);
-        io.to(user.room).emit('newMessage', generateMessage(message.from, message.text));
+        if(user && isRealString(message.text)){
+            io.to(user.room).emit('newMessage', generateMessage(user.name, message.text));
+        }
+        
         callback();
     });
     
     //Called when the coords of user is recieved
     socket.on('createLocationMessage', (coords) => {
         var user = users.getUser(socket.id);
-        io.to(user.room).emit('newLocationMessage', generateLocationMessage('user', coords.latitude, coords.longitude));
-    });
+        if(user){
+            io.to(user.room).emit('newLocationMessage', generateLocationMessage(user.name, coords.latitude, coords.longitude));
+        }
+        });
     
     //When the user disconnects from the server
     socket.on('disconnect', () => {
